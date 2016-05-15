@@ -56,6 +56,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     public static final int MODE_HIDDEN = 0x00000080;
     // Where to display on open.
     public static final String KEY_START_PATH = "KEY_START_PATH";
+    public static final String KEY_BASE_PATHS = "KEY_BASE_PATHS";
     // See MODE_XXX constants above for possible values
     public static final String KEY_MODE = "KEY_MODE";
     // If it should be possible to create directories.
@@ -68,6 +69,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     protected final HashSet<CheckableViewHolder> mCheckedVisibleViewHolders;
     protected int mode = MODE_FILE;
     protected T mCurrentPath = null;
+    protected T[] mBasePaths = null;
     protected boolean allowCreateDir = false;
     protected boolean allowMultiple = false;
     protected OnFilePickedListener mListener;
@@ -108,11 +110,12 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
      * The key/value-pairs listed below will be overwritten however.
      *
      * @param startPath      path to directory the picker will show upon start
+     * @param basePaths      paths that should always be listed
      * @param mode           what is allowed to be selected (dirs, files, both)
      * @param allowMultiple  selecting a single item or several?
      * @param allowDirCreate can new directories be created?
      */
-    public void setArgs(final String startPath, final int mode,
+    public void setArgs(final String startPath, final String[] basePaths, final int mode,
                         final boolean allowMultiple, final boolean allowDirCreate) {
         // There might have been arguments set elsewhere, if so do not overwrite them.
         Bundle b = getArguments();
@@ -122,6 +125,9 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
 
         if (startPath != null) {
             b.putString(KEY_START_PATH, startPath);
+        }
+        if (basePaths != null) {
+            b.putStringArray(KEY_BASE_PATHS, basePaths);
         }
         b.putBoolean(KEY_ALLOW_DIR_CREATE, allowDirCreate);
         b.putBoolean(KEY_ALLOW_MULTIPLE, allowMultiple);
@@ -304,6 +310,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
                         .getBoolean(KEY_ALLOW_MULTIPLE, allowMultiple);
                 mCurrentPath =
                         getPath(savedInstanceState.getString(KEY_CURRENT_PATH));
+                mBasePaths = getPaths(savedInstanceState.getStringArray(KEY_BASE_PATHS));
             } else if (getArguments() != null) {
                 mode = getArguments().getInt(KEY_MODE, mode);
                 allowCreateDir = getArguments()
@@ -313,6 +320,11 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
                 if (getArguments().containsKey(KEY_START_PATH)) {
                     mCurrentPath =
                             getPath(getArguments().getString(KEY_START_PATH));
+                }
+                if (getArguments().containsKey(KEY_BASE_PATHS)) {
+                    mBasePaths = getPaths(getArguments().getStringArray(KEY_BASE_PATHS));
+                } else {
+                    mBasePaths = getPaths(null);
                 }
             }
 
@@ -352,6 +364,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     public void onSaveInstanceState(Bundle b) {
         super.onSaveInstanceState(b);
         b.putString(KEY_CURRENT_PATH, mCurrentPath.toString());
+        b.putStringArray(KEY_BASE_PATHS, getFullPaths(mBasePaths));
         b.putBoolean(KEY_ALLOW_MULTIPLE, allowMultiple);
         b.putBoolean(KEY_ALLOW_DIR_CREATE, allowCreateDir);
         b.putInt(KEY_MODE, mode);

@@ -163,12 +163,48 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
     }
 
     /**
+     * Convert the paths to the type used.
+     *
+     * @param paths array of either files or directories
+     * @return Array of File representations of the path strings
+     */
+    @Override
+    public File[] getPaths(final String[] paths) {
+        if (paths == null) {
+            return new File[0];
+        } else {
+            File[] files = new File[paths.length];
+            for (int i = 0; i < paths.length; ++i) {
+                files[i] = new File(paths[i]);
+            }
+            return files;
+        }
+    }
+
+    /**
      * @param path either a file or directory
      * @return the full path to the file
      */
     @Override
     public String getFullPath(final File path) {
         return path.getPath();
+    }
+
+    /**
+     * @param paths array of either file or directories
+     * @return the full paths to the files
+     */
+    @Override
+    public String[] getFullPaths(final File[] paths) {
+        if (paths == null) {
+            return new String[0];
+        } else {
+            String[] files = new String[paths.length];
+            for (int i = 0; i < paths.length; ++i) {
+                files[i] = paths[i].getPath();
+            }
+            return files;
+        }
     }
 
     /**
@@ -231,6 +267,18 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
                         if (isItemVisible(f)) {
                             files.add(f);
                         }
+                    }
+                }
+                for (File basePath : mBasePaths) {
+                    File child = basePath;
+                    File parent = getParent(child);
+                    while (!child.equals(parent) && !mCurrentPath.equals(parent)) {
+                        child = parent;
+                        parent = getParent(child);
+                    }
+                    if (mCurrentPath.equals(parent) &&
+                        (files.indexOf(child) == SortedList.INVALID_POSITION)) {
+                        files.add(child);
                     }
                 }
                 files.endBatchedUpdates();

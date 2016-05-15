@@ -59,6 +59,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     public static final String EXTRA_ALLOW_MULTIPLE =
             "android.intent.extra.ALLOW_MULTIPLE";
     public static final String EXTRA_PATHS = "nononsense.intent.PATHS";
+    public static final String EXTRA_BASE_PATHS = "nononsense.intent.BASE_PATHS";
     public static final int MODE_FILE = AbstractFilePickerFragment.MODE_FILE;
     public static final int MODE_DIR = AbstractFilePickerFragment.MODE_DIR;
     public static final int MODE_FILE_AND_DIR = AbstractFilePickerFragment.MODE_FILE_AND_DIR;
@@ -68,6 +69,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     public static final int MODE_HIDDEN = AbstractFilePickerFragment.MODE_HIDDEN;
     protected static final String TAG = "filepicker_fragment";
     protected String startPath = null;
+    protected String[] basePaths = null;
     protected int mode = AbstractFilePickerFragment.MODE_FILE;
     protected boolean allowCreateDir = false;
     protected boolean allowMultiple = false;
@@ -82,6 +84,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
         Intent intent = getIntent();
         if (intent != null) {
             startPath = intent.getStringExtra(EXTRA_START_PATH);
+            basePaths = intent.getStringArrayExtra(EXTRA_BASE_PATHS);
             mode = intent.getIntExtra(EXTRA_MODE, mode);
             allowCreateDir = intent.getBooleanExtra(EXTRA_ALLOW_CREATE_DIR,
                     allowCreateDir);
@@ -95,7 +98,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
 
         if (fragment == null) {
             fragment =
-                    getFragment(startPath, mode, allowMultiple, allowCreateDir);
+                    getFragment(startPath, basePaths, mode, allowMultiple, allowCreateDir);
         }
 
         if (fragment != null) {
@@ -108,7 +111,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     }
 
     protected abstract AbstractFilePickerFragment<T> getFragment(
-            final String startPath, final int mode, final boolean allowMultiple,
+            final String startPath, final String[] basePaths, final int mode, final boolean allowMultiple,
             final boolean allowCreateDir);
 
     @Override

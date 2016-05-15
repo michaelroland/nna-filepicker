@@ -57,11 +57,24 @@ public interface LogicHandler<T> {
     String getFullPath(final T path);
 
     /**
+     * @param paths
+     * @return the full paths to the files
+     */
+    String[] getFullPaths(final T[] paths);
+
+    /**
      * Convert the path to the type used.
      *
      * @param path
      */
     T getPath(final String path);
+
+    /**
+     * Convert the paths to the type used.
+     *
+     * @param paths
+     */
+    T[] getPaths(final String[] paths);
 
     /**
      * Get the root path (lowest allowed).
