@@ -63,6 +63,10 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     public static final int MODE_FILE_AND_DIR =
             AbstractFilePickerFragment.MODE_FILE_AND_DIR;
     public static final int MODE_DIR = AbstractFilePickerFragment.MODE_DIR;
+    public static final int MODE_READABLE = AbstractFilePickerFragment.MODE_READABLE;
+    public static final int MODE_WRITABLE = AbstractFilePickerFragment.MODE_WRITABLE;
+    public static final int MODE_EXECUTABLE = AbstractFilePickerFragment.MODE_EXECUTABLE;
+    public static final int MODE_HIDDEN = AbstractFilePickerFragment.MODE_HIDDEN;
     protected static final String TAG = "filepicker_fragment";
     protected String startPath = null;
     protected int mode = AbstractFilePickerFragment.MODE_FILE;

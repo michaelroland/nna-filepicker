@@ -47,9 +47,13 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
 
     // The different preset modes of operation. This impacts the behaviour
     // and possible actions in the UI.
-    public static final int MODE_FILE = 0;
-    public static final int MODE_DIR = 1;
-    public static final int MODE_FILE_AND_DIR = 2;
+    public static final int MODE_FILE = 0x00000001;
+    public static final int MODE_DIR = 0x00000002;
+    public static final int MODE_FILE_AND_DIR = MODE_FILE | MODE_DIR;
+    public static final int MODE_READABLE = 0x00000010;
+    public static final int MODE_WRITABLE = 0x00000020;
+    public static final int MODE_EXECUTABLE = 0x00000040;
+    public static final int MODE_HIDDEN = 0x00000080;
     // Where to display on open.
     public static final String KEY_START_PATH = "KEY_START_PATH";
     // See MODE_XXX constants above for possible values
@@ -193,7 +197,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
         }
 
         // Some invalid cases first
-        if ((allowMultiple || mode == MODE_FILE) && mCheckedItems.isEmpty()) {
+        if ((allowMultiple || (mode & MODE_FILE_AND_DIR) == MODE_FILE) && mCheckedItems.isEmpty()) {
             if (mToast == null) {
                 mToast = Toast.makeText(getActivity(), R.string.nnf_select_something_first,
                         Toast.LENGTH_SHORT);
@@ -204,9 +208,9 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
 
         if (allowMultiple) {
             mListener.onFilesPicked(toUri(mCheckedItems));
-        } else if (mode == MODE_FILE) {
+        } else if ((mode & MODE_FILE_AND_DIR) == MODE_FILE) {
             mListener.onFilePicked(toUri(getFirstCheckedItem()));
-        } else if (mode == MODE_DIR) {
+        } else if ((mode & MODE_FILE_AND_DIR) == MODE_DIR) {
             mListener.onFilePicked(toUri(mCurrentPath));
         } else {
             // single FILE OR DIR
@@ -248,11 +252,10 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     public boolean isCheckable(final T data) {
         final boolean checkable;
         if (isDir(data)) {
-            checkable = ((mode == MODE_DIR && allowMultiple) ||
-                    (mode == MODE_FILE_AND_DIR && allowMultiple));
+            checkable = ((mode & MODE_DIR) == MODE_DIR && allowMultiple);
         } else {
             // File
-            checkable = (mode != MODE_DIR);
+            checkable = (mode & MODE_DIR) != MODE_DIR;
         }
         return checkable;
     }

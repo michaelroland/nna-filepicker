@@ -314,10 +314,13 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
      * @return True if item should be added to the list, false otherwise
      */
     protected boolean isItemVisible(final File file) {
-        if(!showHiddenItems && file.isHidden()){
+        if(!showHiddenItems && ((mode & MODE_HIDDEN) != MODE_HIDDEN) && file.isHidden()){
             return false;
         }
-        return (isDir(file) || (mode == MODE_FILE || mode == MODE_FILE_AND_DIR));
+        return (isDir(file) || ((mode & MODE_FILE) == MODE_FILE)) &&
+               (((mode & MODE_READABLE) != MODE_READABLE) || file.canRead()) &&
+               (((mode & MODE_WRITABLE) != MODE_WRITABLE) || file.canWrite()) &&
+               (((mode & MODE_EXECUTABLE) != MODE_EXECUTABLE) || file.canExecute());
     }
 
     /**
