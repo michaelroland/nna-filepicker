@@ -51,18 +51,17 @@ import java.util.List;
 public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
         implements AbstractFilePickerFragment.OnFilePickedListener {
     public static final String EXTRA_START_PATH =
-            "nononsense.intent" + ".START_PATH";
+            "nononsense.intent.START_PATH";
     public static final String EXTRA_MODE = "nononsense.intent.MODE";
     public static final String EXTRA_ALLOW_CREATE_DIR =
-            "nononsense.intent" + ".ALLOW_CREATE_DIR";
+            "nononsense.intent.ALLOW_CREATE_DIR";
     // For compatibility
     public static final String EXTRA_ALLOW_MULTIPLE =
-            "android.intent.extra" + ".ALLOW_MULTIPLE";
+            "android.intent.extra.ALLOW_MULTIPLE";
     public static final String EXTRA_PATHS = "nononsense.intent.PATHS";
     public static final int MODE_FILE = AbstractFilePickerFragment.MODE_FILE;
-    public static final int MODE_FILE_AND_DIR =
-            AbstractFilePickerFragment.MODE_FILE_AND_DIR;
     public static final int MODE_DIR = AbstractFilePickerFragment.MODE_DIR;
+    public static final int MODE_FILE_AND_DIR = AbstractFilePickerFragment.MODE_FILE_AND_DIR;
     public static final int MODE_READABLE = AbstractFilePickerFragment.MODE_READABLE;
     public static final int MODE_WRITABLE = AbstractFilePickerFragment.MODE_WRITABLE;
     public static final int MODE_EXECUTABLE = AbstractFilePickerFragment.MODE_EXECUTABLE;
