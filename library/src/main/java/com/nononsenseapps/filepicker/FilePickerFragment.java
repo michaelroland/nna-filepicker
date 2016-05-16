@@ -130,6 +130,25 @@ public class FilePickerFragment extends AbstractFilePickerFragment<File> {
     }
 
     /**
+     * @param path either a file or directory
+     * @return directory name component of path
+     */
+    @NonNull
+    @Override
+    public String getBaseDir(@NonNull File path) {
+        if (isDir(path)) {
+            return getFullPath(path);
+        } else {
+            File parentPath = path.getParentFile();
+            if (parentPath != null) {
+                return getFullPath(parentPath);
+            } else {
+                return "";
+            }
+        }
+    }
+
+    /**
      * Return the path to the parent directory. Should return the root if
      * from is root.
      *

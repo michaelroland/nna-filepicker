@@ -37,6 +37,13 @@ public interface LogicHandler<T> {
     String getName(@NonNull final T path);
 
     /**
+     * @param path either a file or directory
+     * @return directory name component of path
+     */
+    @NonNull
+    public String getBaseDir(@NonNull final T path);
+
+    /**
      * Convert the path to a URI for the return intent
      *
      * @param path

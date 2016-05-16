@@ -60,9 +60,10 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     public static final int MODE_WRITABLE = 0x00000020;
     public static final int MODE_EXECUTABLE = 0x00000040;
     public static final int MODE_HIDDEN = 0x00000080;
-    public static final int MODE_NEW_FILE = 3;
+    public static final int MODE_NEW_FILE = 0x00010000 | MODE_FILE;
     // Where to display on open.
     public static final String KEY_START_PATH = "KEY_START_PATH";
+    public static final String KEY_START_FILE = "KEY_START_FILE";
     public static final String KEY_BASE_PATHS = "KEY_BASE_PATHS";
     // See MODE_XXX constants above for possible values
     public static final String KEY_MODE = "KEY_MODE";
@@ -132,7 +133,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
                         final boolean allowMultiple, final boolean allowDirCreate,
                         final boolean allowExistingFile) {
         // Validate some assumptions so users don't get surprised (or get surprised early)
-        if (mode == MODE_NEW_FILE && allowMultiple) {
+        if ((mode & MODE_NEW_FILE) == MODE_NEW_FILE && allowMultiple) {
             throw new IllegalArgumentException(
                     "MODE_NEW_FILE does not support 'allowMultiple'");
 
@@ -144,7 +145,14 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
         }
 
         if (startPath != null) {
-            b.putString(KEY_START_PATH, startPath);
+            T startPathObj = getPath(startPath);
+            if (isDir(startPathObj)) {
+                b.putString(KEY_START_PATH, startPath);
+            } else {
+                b.putString(KEY_START_PATH, getBaseDir(startPathObj));
+                b.putString(KEY_START_FILE, getName(startPathObj));
+            }
+
         }
         if (basePaths != null) {
             b.putStringArray(KEY_BASE_PATHS, basePaths);
@@ -259,7 +267,8 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
             return;
         }
         if ((allowMultiple || (mode & MODE_FILE_AND_DIR) == MODE_FILE) &&
-            (mCheckedItems.isEmpty() || getFirstCheckedItem() == null)) {
+            (mCheckedItems.isEmpty() || getFirstCheckedItem() == null) &&
+            ((mode & MODE_NEW_FILE) != MODE_NEW_FILE || getNewFileName().isEmpty())) {
             if (mToast == null) {
                 mToast = Toast.makeText(getActivity(), R.string.nnf_select_something_first,
                         Toast.LENGTH_SHORT);
@@ -330,7 +339,7 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     public boolean isCheckable(@NonNull final T data) {
         final boolean checkable;
         if (isDir(data)) {
-            checkable = ((mode & MODE_DIR) == MODE_DIR && allowMultiple);
+            checkable = ((mode & MODE_DIR) == MODE_DIR) && allowMultiple;
         } else {
             // File
             checkable = ((mode & MODE_DIR) != MODE_DIR) || allowExistingFile;
@@ -400,6 +409,12 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
                     String path = getArguments().getString(KEY_START_PATH);
                     if (path != null) {
                         mCurrentPath = getPath(path);
+                    }
+                }
+                if (getArguments().containsKey(KEY_START_FILE)) {
+                    String fileName = getArguments().getString(KEY_START_FILE);
+                    if (fileName != null && mEditTextFileName != null) {
+                        mEditTextFileName.setText(fileName);
                     }
                 }
                 if (getArguments().containsKey(KEY_BASE_PATHS)) {
